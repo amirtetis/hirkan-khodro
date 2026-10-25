@@ -15,17 +15,17 @@
    Palette: liver, maroon, yellow. Single dark look by choice. */
 :root{
   color-scheme:dark;
-  --bg:#1E070C;
-  --surface:#2E0D15;
+  --bg:#280000;
+  --surface:#3A0505;
   --ink:#FDF1CF;
-  --muted:#D8AFA3;
-  --line:#5A2230;
-  --maroon:#6E1226;
-  --maroon-deep:#4A0C1B;
-  --yellow:#F7C61B;
-  --on-yellow:#2A0A10;
-  --chip:#431320;
-  --field:#240810;
+  --muted:#E0B9A0;
+  --line:#661818;
+  --maroon:#800000;
+  --maroon-deep:#4D0000;
+  --yellow:#CC7722;
+  --on-yellow:#280000;
+  --chip:#4A0A0A;
+  --field:#1F0000;
   --font:"Vazirmatn",Tahoma,"Segoe UI",sans-serif;
 }
 *{box-sizing:border-box}
@@ -69,14 +69,14 @@ nav.menu a:hover{background:var(--chip);color:var(--yellow)}
 }
 .hero::after{
   content:"";position:absolute;inset:auto 0 0 0;height:90px;opacity:.5;
-  background:repeating-linear-gradient(100deg,transparent 0 34px,rgba(247,198,27,.16) 34px 36px);
+  background:repeating-linear-gradient(100deg,transparent 0 34px,rgba(204,119,34,.16) 34px 36px);
   mask-image:linear-gradient(to top,#000,transparent);
   -webkit-mask-image:linear-gradient(to top,#000,transparent);
   pointer-events:none;
 }
 .hero>*{position:relative;z-index:1}
 .hero h1{font-size:clamp(1.8rem,4.6vw,3.2rem);font-weight:900;max-width:18ch}
-.hero p.lead{margin-top:18px;max-width:52ch;color:#EBC9BE;font-size:1.05rem}
+.hero p.lead{margin-top:18px;max-width:52ch;color:#F0D2B8;font-size:1.05rem}
 .cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
 .btn{
   display:inline-flex;align-items:center;justify-content:center;min-height:48px;
@@ -84,11 +84,11 @@ nav.menu a:hover{background:var(--chip);color:var(--yellow)}
 }
 .btn.primary{background:var(--yellow);color:var(--on-yellow)}
 .btn.primary:hover{filter:brightness(1.08)}
-.btn.ghost{border-color:rgba(247,198,27,.55);color:var(--yellow);background:transparent}
-.btn.ghost:hover{background:rgba(247,198,27,.12)}
-.route{margin-top:36px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:.95rem;color:#EBC9BE}
+.btn.ghost{border-color:rgba(204,119,34,.55);color:var(--yellow);background:transparent}
+.btn.ghost:hover{background:rgba(204,119,34,.12)}
+.route{margin-top:36px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:.95rem;color:#F0D2B8}
 .route b{color:var(--yellow)}
-.route .dash{flex:1 1 40px;min-width:40px;max-width:120px;border-top:2px dashed rgba(247,198,27,.4)}
+.route .dash{flex:1 1 40px;min-width:40px;max-width:120px;border-top:2px dashed rgba(204,119,34,.4)}
 
 /* road band: cars move with scroll */
 .road{
@@ -98,7 +98,7 @@ nav.menu a:hover{background:var(--chip);color:var(--yellow)}
 .rcar{position:absolute;bottom:6px;left:0;width:170px;color:var(--yellow);will-change:transform}
 .rcar svg{display:block;width:100%;height:auto;overflow:visible}
 .wheel{transform-box:fill-box;transform-origin:center;transform:rotate(var(--rot,0deg))}
-.rcar.c2{width:150px;color:#F0A12B}
+.rcar.c2{width:150px;color:#E3A15C}
 .rcar.c3{width:185px;color:#FDF1CF}
 
 section{padding-block:clamp(40px,7vw,80px)}
@@ -139,7 +139,7 @@ section{padding-block:clamp(40px,7vw,80px)}
 
 /* detail dialog */
 dialog.detail{width:min(920px,calc(100vw - 24px));max-height:calc(100vh - 24px);padding:0;border:1px solid var(--line);border-radius:22px;background:var(--surface);color:var(--ink);overflow:auto}
-dialog.detail::backdrop{background:rgba(10,2,4,.78)}
+dialog.detail::backdrop{background:rgba(20,0,0,.8)}
 .dh{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--surface);z-index:2}
 .dh h3{font-size:1.1rem;font-weight:900}
 .dx{font:inherit;cursor:pointer;min-height:40px;padding:4px 14px;border-radius:10px;background:var(--chip);color:var(--ink);border:1px solid var(--line)}
@@ -147,7 +147,7 @@ dialog.detail::backdrop{background:rgba(10,2,4,.78)}
 .gal-main{position:relative;aspect-ratio:4/3;max-width:100%;background:var(--field);border-radius:16px;overflow:hidden;display:grid;place-items:center}
 .gal-main>img.big{width:100%;height:100%;object-fit:contain;-webkit-user-drag:none}
 .gal-main .wm img{width:34%}
-.gnav{position:absolute;top:50%;transform:translateY(-50%);z-index:3;font:inherit;font-size:1.4rem;line-height:1;width:44px;height:44px;border-radius:50%;border:0;cursor:pointer;background:rgba(30,7,12,.7);color:var(--yellow)}
+.gnav{position:absolute;top:50%;transform:translateY(-50%);z-index:3;font:inherit;font-size:1.4rem;line-height:1;width:44px;height:44px;border-radius:50%;border:0;cursor:pointer;background:rgba(40,0,0,.75);color:var(--yellow)}
 .gnav.prev{right:10px}.gnav.next{left:10px}
 .thumbs{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
 .thumbs button{flex:none;width:84px;height:60px;padding:0;border-radius:10px;overflow:hidden;border:2px solid transparent;background:var(--field);cursor:pointer}
@@ -187,8 +187,8 @@ input,select,textarea{
   font:inherit;color:var(--ink);background:var(--field);border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;min-height:46px;width:100%;min-width:0;
 }
 textarea{min-height:96px;resize:vertical}
-input::placeholder,textarea::placeholder{color:#A8857C}
-input:focus,select:focus,textarea:focus{border-color:var(--yellow);outline:none;box-shadow:0 0 0 3px rgba(247,198,27,.3)}
+input::placeholder,textarea::placeholder{color:#B38A74}
+input:focus,select:focus,textarea:focus{border-color:var(--yellow);outline:none;box-shadow:0 0 0 3px rgba(204,119,34,.3)}
 .btn.solid{background:var(--yellow);color:var(--on-yellow);width:100%}
 .btn.solid:hover{filter:brightness(1.08)}
 .result{display:none;border-radius:14px;padding:14px 16px;background:var(--chip);font-size:.95rem}
@@ -219,14 +219,14 @@ footer{padding-block:32px;color:var(--muted);font-size:.9rem;border-top:1px soli
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
     <symbol id="mark" viewBox="0 0 40 40">
-      <rect width="40" height="40" rx="11" fill="#6E1226"/>
-      <path d="M8 26c3-4 5-4 8 0s5 4 8 0 5-4 8 0" fill="none" stroke="#F7C61B" stroke-width="2.4" stroke-linecap="round"/>
+      <rect width="40" height="40" rx="11" fill="#800000"/>
+      <path d="M8 26c3-4 5-4 8 0s5 4 8 0 5-4 8 0" fill="none" stroke="#CC7722" stroke-width="2.4" stroke-linecap="round"/>
       <path d="M20 8l6 9h-3.5l5 7H12.5l5-7H14z" fill="#FDF1CF"/>
     </symbol>
     <symbol id="wheelsym" viewBox="0 0 100 100">
-      <circle cx="50" cy="50" r="46" fill="#120407" stroke="#F7C61B" stroke-width="6"/>
-      <circle cx="50" cy="50" r="30" fill="none" stroke="#6E1226" stroke-width="8"/>
-      <g stroke="#F7C61B" stroke-width="6" stroke-linecap="round">
+      <circle cx="50" cy="50" r="46" fill="#1A0000" stroke="#CC7722" stroke-width="6"/>
+      <circle cx="50" cy="50" r="30" fill="none" stroke="#800000" stroke-width="8"/>
+      <g stroke="#CC7722" stroke-width="6" stroke-linecap="round">
         <line x1="50" y1="50" x2="50" y2="22"/>
         <line x1="50" y1="50" x2="76.6" y2="41.4"/>
         <line x1="50" y1="50" x2="66.4" y2="72.6"/>
@@ -291,13 +291,13 @@ footer{padding-block:32px;color:var(--muted);font-size:.9rem;border-top:1px soli
   <!-- generic silhouettes: a long sedan, a tall SUV and a large 4x4. They move with the scroll. -->
   <div class="road" id="road" aria-hidden="true">
     <div class="rcar c1" data-speed="0.55" data-offset="0">
-      <svg viewBox="0 0 220 70"><path fill="currentColor" d="M8 52V44q0-5 6-6l34-4Q62 16 92 16h48q20 2 32 18l32 4q8 2 8 8v8z"/><path fill="#1E070C" d="M62 33q10-12 30-12h20v12zM118 21h22q12 2 20 12h-42z"/><g class="wheel"><circle cx="52" cy="54" r="12" fill="#120407" stroke="currentColor" stroke-width="3"/><path d="M52 44v20M42 54h20M45 47l14 14M59 47L45 61" stroke="currentColor" stroke-width="2"/></g><g class="wheel"><circle cx="170" cy="54" r="12" fill="#120407" stroke="currentColor" stroke-width="3"/><path d="M170 44v20M160 54h20M163 47l14 14M177 47l-14 14" stroke="currentColor" stroke-width="2"/></g></svg>
+      <svg viewBox="0 0 220 70"><path fill="currentColor" d="M8 52V44q0-5 6-6l34-4Q62 16 92 16h48q20 2 32 18l32 4q8 2 8 8v8z"/><path fill="#280000" d="M62 33q10-12 30-12h20v12zM118 21h22q12 2 20 12h-42z"/><g class="wheel"><circle cx="52" cy="54" r="12" fill="#1A0000" stroke="currentColor" stroke-width="3"/><path d="M52 44v20M42 54h20M45 47l14 14M59 47L45 61" stroke="currentColor" stroke-width="2"/></g><g class="wheel"><circle cx="170" cy="54" r="12" fill="#1A0000" stroke="currentColor" stroke-width="3"/><path d="M170 44v20M160 54h20M163 47l14 14M177 47l-14 14" stroke="currentColor" stroke-width="2"/></g></svg>
     </div>
     <div class="rcar c2" data-speed="0.8" data-offset="420">
-      <svg viewBox="0 0 220 70"><path fill="currentColor" d="M10 54V38q0-5 6-6l34-2 16-18h92q12 0 18 14l4 5 24 4q8 2 8 8v11z"/><path fill="#1E070C" d="M72 17h36v13H58zM114 17h42q6 0 9 10l3 3h-54z"/><g class="wheel"><circle cx="54" cy="56" r="13" fill="#120407" stroke="currentColor" stroke-width="3"/><path d="M54 45v22M43 56h22M46 48l16 16M62 48L46 64" stroke="currentColor" stroke-width="2"/></g><g class="wheel"><circle cx="168" cy="56" r="13" fill="#120407" stroke="currentColor" stroke-width="3"/><path d="M168 45v22M157 56h22M160 48l16 16M176 48l-16 16" stroke="currentColor" stroke-width="2"/></g></svg>
+      <svg viewBox="0 0 220 70"><path fill="currentColor" d="M10 54V38q0-5 6-6l34-2 16-18h92q12 0 18 14l4 5 24 4q8 2 8 8v11z"/><path fill="#280000" d="M72 17h36v13H58zM114 17h42q6 0 9 10l3 3h-54z"/><g class="wheel"><circle cx="54" cy="56" r="13" fill="#1A0000" stroke="currentColor" stroke-width="3"/><path d="M54 45v22M43 56h22M46 48l16 16M62 48L46 64" stroke="currentColor" stroke-width="2"/></g><g class="wheel"><circle cx="168" cy="56" r="13" fill="#1A0000" stroke="currentColor" stroke-width="3"/><path d="M168 45v22M157 56h22M160 48l16 16M176 48l-16 16" stroke="currentColor" stroke-width="2"/></g></svg>
     </div>
     <div class="rcar c3" data-speed="1.05" data-offset="880">
-      <svg viewBox="0 0 220 70"><path fill="currentColor" d="M10 54V34q0-6 6-7l28-1 14-18h116q8 0 12 11l2 8 18 4q6 2 6 8v15z"/><path stroke="currentColor" stroke-width="2" d="M66 5h100" fill="none"/><path fill="#1E070C" d="M66 14h42v12H52zM114 14h44q5 0 8 8l2 4h-54z"/><g class="wheel"><circle cx="52" cy="56" r="14" fill="#120407" stroke="currentColor" stroke-width="3"/><path d="M52 44v24M40 56h24M43 47l18 18M61 47L43 65" stroke="currentColor" stroke-width="2"/></g><g class="wheel"><circle cx="170" cy="56" r="14" fill="#120407" stroke="currentColor" stroke-width="3"/><path d="M170 44v24M158 56h24M161 47l18 18M179 47l-18 18" stroke="currentColor" stroke-width="2"/></g></svg>
+      <svg viewBox="0 0 220 70"><path fill="currentColor" d="M10 54V34q0-6 6-7l28-1 14-18h116q8 0 12 11l2 8 18 4q6 2 6 8v15z"/><path stroke="currentColor" stroke-width="2" d="M66 5h100" fill="none"/><path fill="#280000" d="M66 14h42v12H52zM114 14h44q5 0 8 8l2 4h-54z"/><g class="wheel"><circle cx="52" cy="56" r="14" fill="#1A0000" stroke="currentColor" stroke-width="3"/><path d="M52 44v24M40 56h24M43 47l18 18M61 47L43 65" stroke="currentColor" stroke-width="2"/></g><g class="wheel"><circle cx="170" cy="56" r="14" fill="#1A0000" stroke="currentColor" stroke-width="3"/><path d="M170 44v24M158 56h24M161 47l18 18M179 47l-18 18" stroke="currentColor" stroke-width="2"/></g></svg>
     </div>
   </div>
 
@@ -427,7 +427,7 @@ const SAMPLE_CARS = [
 
 const $ = (s)=>document.querySelector(s);
 const esc = (s)=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const phIcon = '<svg class="ph" viewBox="0 0 120 56" aria-hidden="true"><path d="M8 40V30c0-3 2-5 5-6l16-4 14-12h34l16 12 14 3c4 1 7 4 7 8v9z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><circle cx="34" cy="42" r="8" fill="#2E0D15" stroke="currentColor" stroke-width="3"/><circle cx="88" cy="42" r="8" fill="#2E0D15" stroke="currentColor" stroke-width="3"/></svg>';
+const phIcon = '<svg class="ph" viewBox="0 0 120 56" aria-hidden="true"><path d="M8 40V30c0-3 2-5 5-6l16-4 14-12h34l16 12 14 3c4 1 7 4 7 8v9z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><circle cx="34" cy="42" r="8" fill="#3A0505" stroke="currentColor" stroke-width="3"/><circle cx="88" cy="42" r="8" fill="#3A0505" stroke="currentColor" stroke-width="3"/></svg>';
 let CARS = [];
 
 /* loader */
