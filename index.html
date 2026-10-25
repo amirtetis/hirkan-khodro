@@ -136,6 +136,29 @@ section{padding-block:clamp(40px,7vw,80px)}
 .car .pic svg.ph{width:64%;height:auto;opacity:.7}
 .wm{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}
 .wm img{width:42%;max-height:70%;object-fit:contain;opacity:.25}
+
+/* detail dialog */
+dialog.detail{width:min(920px,calc(100vw - 24px));max-height:calc(100vh - 24px);padding:0;border:1px solid var(--line);border-radius:22px;background:var(--surface);color:var(--ink);overflow:auto}
+dialog.detail::backdrop{background:rgba(10,2,4,.78)}
+.dh{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--surface);z-index:2}
+.dh h3{font-size:1.1rem;font-weight:900}
+.dx{font:inherit;cursor:pointer;min-height:40px;padding:4px 14px;border-radius:10px;background:var(--chip);color:var(--ink);border:1px solid var(--line)}
+.dbody{padding:18px;display:grid;gap:16px}
+.gal-main{position:relative;aspect-ratio:4/3;max-width:100%;background:var(--field);border-radius:16px;overflow:hidden;display:grid;place-items:center}
+.gal-main>img.big{width:100%;height:100%;object-fit:contain;-webkit-user-drag:none}
+.gal-main .wm img{width:34%}
+.gnav{position:absolute;top:50%;transform:translateY(-50%);z-index:3;font:inherit;font-size:1.4rem;line-height:1;width:44px;height:44px;border-radius:50%;border:0;cursor:pointer;background:rgba(30,7,12,.7);color:var(--yellow)}
+.gnav.prev{right:10px}.gnav.next{left:10px}
+.thumbs{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.thumbs button{flex:none;width:84px;height:60px;padding:0;border-radius:10px;overflow:hidden;border:2px solid transparent;background:var(--field);cursor:pointer}
+.thumbs button[aria-current="true"]{border-color:var(--yellow)}
+.thumbs img{width:100%;height:100%;object-fit:cover;display:block;-webkit-user-drag:none}
+.dprice{font-size:1.2rem;font-weight:900;color:var(--yellow)}
+.ddesc{white-space:pre-wrap;line-height:2;color:var(--ink);max-width:70ch}
+.dfoot{display:flex;gap:10px;flex-wrap:wrap}
+.btn.mini.alt{background:var(--yellow);color:var(--on-yellow);border-color:var(--yellow)}
+.card-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.card-actions .btn.mini{margin-top:0;flex:1 1 auto}
 .car .body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:8px;flex:1}
 .car h3{font-size:1.05rem;font-weight:700}
 .meta{display:flex;flex-wrap:wrap;gap:6px}
@@ -214,6 +237,17 @@ footer{padding-block:32px;color:var(--muted);font-size:.9rem;border-top:1px soli
     </symbol>
   </defs>
 </svg>
+
+<dialog class="detail" id="detail" aria-labelledby="dTitle">
+  <div class="dh"><h3 id="dTitle"></h3><button class="dx" type="button" id="dClose">بستن</button></div>
+  <div class="dbody">
+    <div id="dGal"></div>
+    <div class="meta" id="dMeta"></div>
+    <div class="dprice" id="dPrice"></div>
+    <div class="ddesc" id="dDesc"></div>
+    <div class="dfoot"><button class="btn primary" type="button" id="dOrder">ثبت سفارش این خودرو</button></div>
+  </div>
+</dialog>
 
 <div id="loader" role="status" aria-label="در حال بارگذاری">
   <svg viewBox="0 0 100 100" aria-hidden="true"><use href="#wheelsym"/></svg>
@@ -441,7 +475,10 @@ function renderCars(){
         <h3>${esc(c.name)}</h3>
         <div class="meta"><span class="hot">${esc(c.type)}</span><span>${esc(c.cond)}</span><span>${esc(c.year)}</span>${c.fuel?`<span>${esc(c.fuel)}</span>`:""}${c.country?`<span>از ${esc(c.country)}</span>`:""}</div>
         <div class="price">${esc(c.price)}</div>
-        <button class="btn mini" type="button" data-car="${esc(c.name)} ${esc(c.year)}">سفارش این خودرو</button>
+        <div class="card-actions">
+          <button class="btn mini alt" type="button" data-open="${CARS.indexOf(c)}">مشاهده جزئیات</button>
+          <button class="btn mini" type="button" data-car="${esc(c.name)} ${esc(c.year)}">سفارش</button>
+        </div>
       </div>
     </article>`).join("") : `<p class="empty">${CARS.length ? "خودرویی با این فیلتر پیدا نشد. فیلتر دیگری را امتحان کنید." : "هنوز آگهی‌ای ثبت نشده است. برای اطلاع از خودروهای موجود با ما تماس بگیرید."}</p>`;
 }
@@ -454,6 +491,46 @@ $("#carList").addEventListener("click",e=>{
   $("#model").value=b.dataset.car;
   location.hash="order";
   setTimeout(()=>$("#name").focus(),350);
+});
+/* detail dialog with gallery */
+let cur=null, gi=0;
+function wmTag(){ return '<div class="wm" aria-hidden="true"><img src="data/logo.png" alt="" draggable="false" onerror="this.parentNode.remove()"></div>'; }
+function paintGal(){
+  const c=cur, imgs=c.imgs||[];
+  if(!imgs.length){ $("#dGal").innerHTML='<div class="gal-main">'+phIcon+'</div>'; return; }
+  $("#dGal").innerHTML =
+    '<div class="gal-main" oncontextmenu="return false"><img class="big" src="uploads/'+esc(imgs[gi])+'" alt="'+esc(c.name)+'" draggable="false">'+wmTag()+
+    (imgs.length>1 ? '<button class="gnav prev" type="button" data-g="1" aria-label="عکس بعدی">&#8250;</button><button class="gnav next" type="button" data-g="-1" aria-label="عکس قبلی">&#8249;</button>' : '')+'</div>'+
+    (imgs.length>1 ? '<div class="thumbs">'+imgs.map((n,i)=>'<button type="button" data-t="'+i+'" aria-current="'+(i===gi)+'" aria-label="عکس '+(i+1)+'"><img src="uploads/'+esc(n)+'" alt="" draggable="false" loading="lazy"></button>').join("")+'</div>' : '');
+}
+function openDetail(i){
+  cur=CARS[i]; if(!cur) return; gi=0;
+  $("#dTitle").textContent=cur.name;
+  $("#dMeta").innerHTML='<span class="hot">'+esc(cur.type)+'</span><span>'+esc(cur.cond)+'</span><span>'+esc(cur.year)+'</span>'+(cur.fuel?'<span>'+esc(cur.fuel)+'</span>':'')+(cur.country?'<span>از '+esc(cur.country)+'</span>':'');
+  $("#dPrice").textContent=cur.price||"";
+  $("#dDesc").textContent=cur.desc||"";
+  paintGal();
+  const d=$("#detail"); if(d.showModal) d.showModal(); else d.setAttribute("open","");
+}
+function closeDetail(){ const d=$("#detail"); if(d.close) d.close(); else d.removeAttribute("open"); }
+$("#carList").addEventListener("click",e=>{
+  const b=e.target.closest("button[data-open]"); if(b) openDetail(+b.dataset.open);
+});
+$("#dClose").addEventListener("click",closeDetail);
+$("#detail").addEventListener("click",e=>{ if(e.target===e.currentTarget) closeDetail(); });
+$("#dGal").addEventListener("click",e=>{
+  const n=e.target.closest("[data-g]"), t=e.target.closest("[data-t]"), len=(cur.imgs||[]).length;
+  if(n){ gi=(gi+ +n.dataset.g+len)%len; paintGal(); }
+  else if(t){ gi=+t.dataset.t; paintGal(); }
+});
+$("#detail").addEventListener("keydown",e=>{
+  const len=cur&&(cur.imgs||[]).length; if(!len||len<2) return;
+  if(e.key==="ArrowRight"){ gi=(gi-1+len)%len; paintGal(); }
+  if(e.key==="ArrowLeft"){ gi=(gi+1)%len; paintGal(); }
+});
+$("#dOrder").addEventListener("click",()=>{
+  $("#model").value=cur.name+" "+cur.year; closeDetail();
+  location.hash="order"; setTimeout(()=>$("#name").focus(),350);
 });
 /* load ads from the admin panel's data file */
 (async function(){
