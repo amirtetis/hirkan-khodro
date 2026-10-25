@@ -29,6 +29,20 @@
   --font:"Vazirmatn",Tahoma,"Segoe UI",sans-serif;
 }
 *{box-sizing:border-box}
+/* luxury texture: soft glow, quilted diamond lattice (like leather seats) and fine grain */
+body::before{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(1100px 620px at 50% -6%,rgba(128,0,0,.55),transparent 70%),
+    radial-gradient(900px 500px at 100% 100%,rgba(204,119,34,.08),transparent 70%),
+    repeating-linear-gradient(45deg,transparent 0 34px,rgba(204,119,34,.055) 34px 35px),
+    repeating-linear-gradient(-45deg,transparent 0 34px,rgba(204,119,34,.055) 34px 35px);
+}
+body::after{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.09;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .9 0 0 0 0 .65 0 0 0 0 .4 0 0 0 1.2 -.2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
 html{scroll-behavior:smooth}
 body{
   margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);
@@ -156,7 +170,7 @@ dialog.detail::backdrop{background:rgba(20,0,0,.8)}
 .dprice{font-size:1.2rem;font-weight:900;color:var(--yellow)}
 .ddesc{white-space:pre-wrap;line-height:2;color:var(--ink);max-width:70ch}
 .dfoot{display:flex;gap:10px;flex-wrap:wrap}
-.btn.mini.alt{background:var(--yellow);color:var(--on-yellow);border-color:var(--yellow)}
+.car .btn.mini.alt{background:var(--yellow);color:var(--on-yellow);border-color:var(--yellow)}
 .card-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
 .card-actions .btn.mini{margin-top:0;flex:1 1 auto}
 .car .body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:8px;flex:1}
