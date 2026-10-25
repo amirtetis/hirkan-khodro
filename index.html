@@ -258,7 +258,7 @@ footer{padding-block:32px;color:var(--muted);font-size:.9rem;border-top:1px soli
 
 <header class="top">
   <a class="brand" href="#top" aria-label="هیرکان خودرو موج مازند">
-    <svg viewBox="0 0 40 40" aria-hidden="true"><use href="#mark"/></svg>
+    <img src="data/logo.png" alt="" width="120" height="48" style="height:44px;width:auto;display:block">
     <span>هیرکان خودرو موج مازند</span>
   </a>
   <nav class="menu" aria-label="منوی اصلی">
@@ -469,7 +469,6 @@ function renderCars(){
     <article class="car">
       <div class="pic" oncontextmenu="return false">
         ${(c.imgs&&c.imgs[0]) ? `<img class="photo" src="uploads/${esc(c.imgs[0])}" alt="${esc(c.name)}" draggable="false" loading="lazy">` : phIcon}
-        ${(c.imgs&&c.imgs[0]) ? '<div class="wm" aria-hidden="true"><img src="data/logo.png" alt="" draggable="false" onerror="this.parentNode.remove()"></div>' : ''}
       </div>
       <div class="body">
         <h3>${esc(c.name)}</h3>
@@ -494,12 +493,11 @@ $("#carList").addEventListener("click",e=>{
 });
 /* detail dialog with gallery */
 let cur=null, gi=0;
-function wmTag(){ return '<div class="wm" aria-hidden="true"><img src="data/logo.png" alt="" draggable="false" onerror="this.parentNode.remove()"></div>'; }
 function paintGal(){
   const c=cur, imgs=c.imgs||[];
   if(!imgs.length){ $("#dGal").innerHTML='<div class="gal-main">'+phIcon+'</div>'; return; }
   $("#dGal").innerHTML =
-    '<div class="gal-main" oncontextmenu="return false"><img class="big" src="uploads/'+esc(imgs[gi])+'" alt="'+esc(c.name)+'" draggable="false">'+wmTag()+
+    '<div class="gal-main" oncontextmenu="return false"><img class="big" src="uploads/'+esc(imgs[gi])+'" alt="'+esc(c.name)+'" draggable="false">'+
     (imgs.length>1 ? '<button class="gnav prev" type="button" data-g="1" aria-label="عکس بعدی">&#8250;</button><button class="gnav next" type="button" data-g="-1" aria-label="عکس قبلی">&#8249;</button>' : '')+'</div>'+
     (imgs.length>1 ? '<div class="thumbs">'+imgs.map((n,i)=>'<button type="button" data-t="'+i+'" aria-current="'+(i===gi)+'" aria-label="عکس '+(i+1)+'"><img src="uploads/'+esc(n)+'" alt="" draggable="false" loading="lazy"></button>').join("")+'</div>' : '');
 }
