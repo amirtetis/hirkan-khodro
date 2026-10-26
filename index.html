@@ -77,7 +77,7 @@ nav.menu a:hover{background:var(--chip);color:var(--yellow)}
 
 /* hero */
 .hero{
-  background:linear-gradient(135deg,var(--maroon),var(--maroon-deep));
+  background:linear-gradient(to left,rgba(110,0,0,.90) 0%,rgba(110,0,0,.80) 55%,rgba(77,0,0,.38) 100%);
   border:1px solid var(--line);border-radius:28px;
   padding:clamp(28px,5vw,64px);position:relative;overflow:hidden;
 }
@@ -89,6 +89,7 @@ nav.menu a:hover{background:var(--chip);color:var(--yellow)}
   pointer-events:none;
 }
 .hero>*{position:relative;z-index:1}
+.hero h1,.hero p.lead{text-shadow:0 2px 14px rgba(20,0,0,.6)}
 .hero h1{font-size:clamp(1.8rem,4.6vw,3.2rem);font-weight:900;max-width:18ch}
 .hero p.lead{margin-top:18px;max-width:52ch;color:#F0D2B8;font-size:1.05rem}
 .cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
@@ -192,6 +193,21 @@ dialog.detail::backdrop{background:rgba(20,0,0,.8)}
 .pricebox small{display:block;color:var(--muted);font-size:.74rem;line-height:1.5}
 .pricebox b{display:block;font-size:1.15rem;font-weight:900;color:var(--yellow);line-height:1.6}
 .dspecs{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+
+/* 3D space: photos float in depth, the camera travels through them as you scroll */
+#space{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;perspective:900px;perspective-origin:50% 36%}
+#space::after{content:"";position:absolute;inset:0;z-index:5;background:linear-gradient(to bottom,rgba(40,0,0,.8) 0%,rgba(40,0,0,0) 22%)}
+#world{position:absolute;left:50%;top:50%;width:0;height:0;transform-style:preserve-3d;will-change:transform}
+#world .floor{position:absolute;left:-3500px;top:-7000px;width:7000px;height:14000px;transform:translate3d(0,300px,-5200px) rotateX(90deg);
+  background:
+   repeating-linear-gradient(0deg,rgba(204,119,34,.30) 0 2px,transparent 2px 160px),
+   repeating-linear-gradient(90deg,rgba(204,119,34,.30) 0 2px,transparent 2px 160px)}
+#world .sp{position:absolute;left:0;top:0;background-size:cover;background-position:center;border:1px solid rgba(204,119,34,.55);border-radius:6px;
+  box-shadow:0 0 60px rgba(204,119,34,.18),0 30px 80px rgba(0,0,0,.55);-webkit-box-reflect:below 8px linear-gradient(transparent 72%,rgba(255,255,255,.22));will-change:opacity}
+#world .dust{position:absolute;left:0;top:0;width:3px;height:3px;border-radius:50%;background:#E3A15C;box-shadow:0 0 8px 2px rgba(204,119,34,.6)}
+.car{transition:transform .3s ease,box-shadow .3s ease}
+.car.tilt{box-shadow:0 22px 50px rgba(0,0,0,.5),0 0 0 1px rgba(204,119,34,.45)}
+@media (prefers-reduced-motion:reduce){.car{transition:none}}
 .car .body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:8px;flex:1}
 .car h3{font-size:1.05rem;font-weight:700}
 .meta{display:flex;flex-wrap:wrap;gap:6px}
@@ -282,6 +298,8 @@ footer{padding-block:32px;color:var(--muted);font-size:.9rem;border-top:1px soli
     <div class="dfoot"><button class="btn primary" type="button" id="dOrder">ثبت سفارش این خودرو</button></div>
   </div>
 </dialog>
+
+<div id="space" aria-hidden="true"><div id="world"><div class="floor"></div></div></div>
 
 <div id="loader" role="status" aria-label="در حال بارگذاری">
   <svg viewBox="0 0 100 100" aria-hidden="true"><use href="#wheelsym"/></svg>
@@ -580,6 +598,83 @@ $("#dOrder").addEventListener("click",()=>{
   $("#model").value=cur.name+" "+cur.year; closeDetail();
   location.hash="order"; setTimeout(()=>$("#name").focus(),350);
 });
+/* 3D space controller */
+const HKSpace=(function(){
+  const space=document.getElementById("space"), world=document.getElementById("world");
+  const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const items=[], dust=[]; let depth=3000, pc=0, mx=.5, my=.5, cx=.5, cy=.5, raf=0, gap=420;
+  const small=()=>innerWidth<700;
+  const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+  function vis(d){ return clamp((d+1900)/700,0,1)*clamp((620-d)/260,0,1); }
+  function layout(){
+    const vw=innerWidth, m=small(), base=m?170:290; gap=m?330:420;
+    items.forEach((o,i)=>{
+      const ar=o.ar||1.33; let w,h;
+      if(ar>=1){ w=base*1.3; h=w/ar; } else { h=base*1.35; w=h*ar; }
+      const side=i%2?1:-1;
+      const x=side*(vw*(m?.30:.34))+side*((i*53)%50);
+      const y=-(((i*37)%5)-2)*24+(m?-50:-20);
+      o.z=-240-i*gap;
+      o.el.style.width=w+"px"; o.el.style.height=h+"px";
+      o.el.style.marginLeft=(-w/2)+"px"; o.el.style.marginTop=(-h/2)+"px";
+      o.el.style.transform="translate3d("+x+"px,"+y+"px,"+o.z+"px) rotateY("+(-side*(m?15:25))+"deg)";
+    });
+    depth=Math.max(0,items.length*gap-300);
+    dust.forEach(dd=>{ dd.z=-Math.random()*(depth+1200)+300; dd.el.style.transform="translate3d("+dd.x+"px,"+dd.y+"px,"+dd.z+"px)"; });
+  }
+  function update(){
+    const camZ=pc*depth;
+    world.style.transform="translate3d(0,0,"+camZ+"px) rotateX("+((cy-.5)*-5)+"deg) rotateY("+((cx-.5)*8+(pc-.5)*-8)+"deg)";
+    items.forEach(o=>{ o.el.style.opacity=vis(o.z+camZ).toFixed(3); });
+    dust.forEach(dd=>{ dd.el.style.opacity=(vis(dd.z+camZ)*.8).toFixed(3); });
+    space.style.opacity=(1-.6*clamp(scrollY/(innerHeight*.9),0,1)).toFixed(3);
+  }
+  function target(){ if(reduce) return 0; const max=document.documentElement.scrollHeight-innerHeight; return max>0?clamp(scrollY/max,0,1):0; }
+  function tick(){
+    raf=0; const t=target();
+    pc+=(t-pc)*.09; cx+=(mx-cx)*.06; cy+=(my-cy)*.06;
+    update();
+    if(Math.abs(t-pc)>.0004||Math.abs(mx-cx)>.002||Math.abs(my-cy)>.002) raf=requestAnimationFrame(tick);
+  }
+  const kick=()=>{ if(!raf) raf=requestAnimationFrame(tick); };
+  function build(cars){
+    items.splice(0).forEach(o=>o.el.remove()); dust.splice(0).forEach(o=>o.el.remove());
+    const max=small()?7:11, lists=cars.map(c=>(c.imgs||[]).slice(0,6)), pick=[];
+    for(let k=0;k<6&&pick.length<max;k++) for(const l of lists){ if(l[k]&&pick.length<max) pick.push(l[k]); }
+    pick.forEach(src=>{
+      const el=document.createElement("div"); el.className="sp"; el.style.backgroundImage='url("uploads/'+src+'")';
+      world.appendChild(el);
+      const o={el:el,z:0,ar:0}; items.push(o);
+      const im=new Image(); im.onload=()=>{ o.ar=im.naturalWidth/im.naturalHeight; layout(); kick(); }; im.src="uploads/"+src;
+    });
+    const n=pick.length?(small()?18:34):0;
+    for(let i=0;i<n;i++){
+      const el=document.createElement("i"); el.className="dust"; world.appendChild(el);
+      dust.push({el:el,x:(Math.random()-.5)*2400,y:(Math.random()-.5)*900,z:0});
+    }
+    layout(); update();
+  }
+  addEventListener("scroll",kick,{passive:true});
+  addEventListener("resize",()=>{ layout(); kick(); });
+  if(!reduce) addEventListener("pointermove",e=>{ if(e.pointerType==="touch") return; mx=e.clientX/innerWidth; my=e.clientY/innerHeight; kick(); },{passive:true});
+  return {build:build};
+})();
+
+/* gentle 3D tilt on ad cards (mouse only) */
+(function(){
+  if(!matchMedia("(hover:hover)").matches||matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const list=document.getElementById("carList"); let last=null;
+  function reset(){ if(last){ last.style.transform=""; last.classList.remove("tilt"); last=null; } }
+  list.addEventListener("pointermove",e=>{
+    const c=e.target.closest(".car"); if(!c){ reset(); return; }
+    if(last&&last!==c) reset();
+    const r=c.getBoundingClientRect(), x=(e.clientX-r.left)/r.width-.5, y=(e.clientY-r.top)/r.height-.5;
+    c.style.transform="perspective(900px) rotateY("+(x*-7).toFixed(2)+"deg) rotateX("+(y*5).toFixed(2)+"deg)";
+    c.classList.add("tilt"); last=c;
+  });
+  list.addEventListener("pointerleave",reset);
+})();
+
 /* load ads from the admin panel's data file */
 (async function(){
   let sample = false;
@@ -593,6 +688,7 @@ $("#dOrder").addEventListener("click",()=>{
   }
   const note = $("#sampleNote"); if(note) note.hidden = !sample;
   renderFilters(); renderCars();
+  HKSpace.build(CARS);
 })();
 
 /* road band: positions follow scroll in both directions */
