@@ -157,7 +157,7 @@ dialog.detail::backdrop{background:rgba(20,0,0,.8)}
 .dh{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--surface);z-index:2}
 .dh h3{font-size:1.1rem;font-weight:900}
 .dx{font:inherit;cursor:pointer;min-height:40px;padding:4px 14px;border-radius:10px;background:var(--chip);color:var(--ink);border:1px solid var(--line)}
-.dbody{padding:18px;display:grid;gap:16px}
+.dbody{padding:18px;display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
 .gal-main{position:relative;min-height:240px;max-width:100%;background:var(--field);border-radius:16px;overflow:hidden;display:grid;place-items:center}
 .gal-main>img.big{display:block;width:100%;height:auto;max-height:74vh;object-fit:contain;-webkit-user-drag:none}
 .gal-main .wm img{width:34%}
@@ -173,6 +173,25 @@ dialog.detail::backdrop{background:rgba(20,0,0,.8)}
 .car .btn.mini.alt{background:var(--yellow);color:var(--on-yellow);border-color:var(--yellow)}
 .card-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
 .card-actions .btn.mini{margin-top:0;flex:1 1 auto}
+
+/* adaptive cards: landscape photo = wide horizontal card, portrait photo = tall vertical card */
+.cars{align-items:start}
+.car .pic{aspect-ratio:4/3}
+.car.port .pic{aspect-ratio:3/4}
+.car.land .pic{aspect-ratio:16/10}
+@media (min-width:700px){
+  .car.land{grid-column:span 2;flex-direction:row}
+  .car.land .pic{flex:1.25 1 0;aspect-ratio:auto;min-height:300px}
+  .car.land .body{flex:1 1 0;min-width:0}
+}
+.specs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.spec{background:var(--field);border:1px solid var(--line);border-radius:10px;padding:5px 10px;min-width:0}
+.spec small{display:block;color:var(--muted);font-size:.74rem;line-height:1.5}
+.spec b{display:block;font-size:.9rem;font-weight:700;overflow-wrap:anywhere;line-height:1.6}
+.pricebox{border:1.5px solid var(--yellow);border-radius:12px;padding:6px 12px;background:rgba(204,119,34,.1)}
+.pricebox small{display:block;color:var(--muted);font-size:.74rem;line-height:1.5}
+.pricebox b{display:block;font-size:1.15rem;font-weight:900;color:var(--yellow);line-height:1.6}
+.dspecs{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
 .car .body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:8px;flex:1}
 .car h3{font-size:1.05rem;font-weight:700}
 .meta{display:flex;flex-wrap:wrap;gap:6px}
@@ -257,7 +276,8 @@ footer{padding-block:32px;color:var(--muted);font-size:.9rem;border-top:1px soli
   <div class="dbody">
     <div id="dGal"></div>
     <div class="meta" id="dMeta"></div>
-    <div class="dprice" id="dPrice"></div>
+    <div id="dPrice"></div>
+    <div class="dspecs" id="dSpecs"></div>
     <div class="ddesc" id="dDesc"></div>
     <div class="dfoot"><button class="btn primary" type="button" id="dOrder">ثبت سفارش این خودرو</button></div>
   </div>
@@ -474,20 +494,35 @@ function renderFilters(){
     row("وضعیت","cond",[ALL,"صفر","کارکرده"]) +
     row("برند","brand",[ALL,...brands]);
 }
+const CARD_KEYS=["حجم موتور","قدرت","گشتاور","رنگ","کارکرد"];
+function specBoxes(c,only){
+  const list=(c.specs||[]).filter(x=>x&&x.v&&(!only||only.includes(x.k)));
+  return list.length?'<div class="specs">'+list.map(x=>'<div class="spec"><small>'+esc(x.k)+'</small><b>'+esc(x.v)+'</b></div>').join("")+'</div>':"";
+}
+function priceText(c){
+  const p=c.price; if(!p) return "";
+  if(typeof p==="string") return p;
+  return [p.value,p.unit].filter(Boolean).join(" ");
+}
+function priceBox(c){
+  const t=priceText(c); if(!t) return "";
+  return '<div class="pricebox"><small>قیمت</small><b>'+esc(t)+'</b></div>';
+}
 function renderCars(){
   const list = CARS.filter(c =>
     (state.type===ALL||c.type===state.type) &&
     (state.cond===ALL||c.cond===state.cond) &&
     (state.brand===ALL||c.brand===state.brand));
   $("#carList").innerHTML = list.length ? list.map(c=>`
-    <article class="car">
+    <article class="car ${c.orient==='portrait'?'port':'land'}">
       <div class="pic" oncontextmenu="return false">
         ${(c.imgs&&c.imgs[0]) ? `<img class="photo" src="uploads/${esc(c.imgs[0])}" alt="${esc(c.name)}" draggable="false" loading="lazy">` : phIcon}
       </div>
       <div class="body">
         <h3>${esc(c.name)}</h3>
         <div class="meta"><span class="hot">${esc(c.type)}</span><span>${esc(c.cond)}</span><span>${esc(c.year)}</span>${c.fuel?`<span>${esc(c.fuel)}</span>`:""}${c.country?`<span>از ${esc(c.country)}</span>`:""}</div>
-        <div class="price">${esc(c.price)}</div>
+        ${specBoxes(c,CARD_KEYS)}
+        ${priceBox(c)}
         <div class="card-actions">
           <button class="btn mini alt" type="button" data-open="${CARS.indexOf(c)}">مشاهده جزئیات</button>
           <button class="btn mini" type="button" data-car="${esc(c.name)} ${esc(c.year)}">سفارش</button>
@@ -519,7 +554,8 @@ function openDetail(i){
   cur=CARS[i]; if(!cur) return; gi=0;
   $("#dTitle").textContent=cur.name;
   $("#dMeta").innerHTML='<span class="hot">'+esc(cur.type)+'</span><span>'+esc(cur.cond)+'</span><span>'+esc(cur.year)+'</span>'+(cur.fuel?'<span>'+esc(cur.fuel)+'</span>':'')+(cur.country?'<span>از '+esc(cur.country)+'</span>':'');
-  $("#dPrice").textContent=cur.price||"";
+  $("#dPrice").innerHTML=priceBox(cur);
+  $("#dSpecs").innerHTML=(cur.specs||[]).filter(x=>x&&x.v).map(x=>'<div class="spec"><small>'+esc(x.k)+'</small><b>'+esc(x.v)+'</b></div>').join("");
   $("#dDesc").textContent=cur.desc||"";
   paintGal();
   const d=$("#detail"); if(d.showModal) d.showModal(); else d.setAttribute("open","");
